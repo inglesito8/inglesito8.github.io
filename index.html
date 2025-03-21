@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ordena las Letras</title>
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://code.responsivevoice.org/responsivevoice.js?key=Y19GNTag"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #6a11cb, #2575fc); /* Fondo azul degradado */
+      color: white; /* Texto blanco */
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Arial', sans-serif;
+    }
+    .letter-box {
+      background: rgba(255, 255, 255, 0.1); /* Fondo semi-transparente */
+      border: 2px solid rgba(255, 255, 255, 0.2); /* Borde semi-transparente */
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    }
+    .letter-box:hover {
+      background: rgba(255, 255, 255, 0.2); /* Fondo más claro al pasar el mouse */
+    }
+    .letter-box.correct {
+      background: #4caf50; /* Verde para letras correctas */
+      color: white;
+    }
+    .phonetic {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7); /* Texto gris claro */
+      margin-top: 4px;
+    }
+    @media (max-width: 640px) {
+      .letter-box {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const words = [
+      "architect", "manager", "chef", "engineer", "dentist", "flight", "attendant", "doctor", "programmer", "nurse", "scientist", "accountant", "computer", "phone", "desk", "printer", "pen", "pencil", "chair", "notepad", "cell phone", "eraser", "sticky note", "single", "married", "husband", "wife", "divorced", "ex-husband", "ex-wife", "boyfriend", "girlfriend", "friends", "aunt", "uncle", "cousin", "nephew", "apartment", "kitchen", "bathroom", "closet", "bedroom", "balcony", "living room", "dining room", "house", "garden", "gas station", "bus stop", "park", "shopping center", "hospital", "coffee shop", "bank", "library", "school", "restaurant", "drugstore", "refrigerator", "microwave", "stove", "cabinet", "dishwasher", "sink", "pan", "pot", "plate", "cup", "glass", "silverware", "knife", "fork", "spoon", "call", "voicemail", "message", "video call", "meet", "talk", "avenue", "street", "traffic light", "bridge", "corner", "block", "north", "south", "east", "west", "right", "left", "umbrella", "cap", "gloves", "scarf", "sunglasses", "boots", "sweater", "coat", "sandals", "sunny", "cloudy", "windy", "rainy", "glasses", "skirt", "backpack", "watch", "shorts", "dress", "purse", "shoes", "shirt", "tie", "jacket", "pants", "t-shirt", "jeans", "socks", "hip-hop", "rock", "pop", "Rhythm", "Blues", "dance music", "classical music", "jazz", "country", "instrument", "guitar", "piano", "sport", "soccer", "basketball", "pictures", "write", "swim", "martial arts", "sing", "dance", "cook", "paint", "board games", "bike", "hike", "run", "exercise", "watch", "read", "movies", "Fruit", "banana", "apple", "orange", "vegetables", "potato", "onion", "carrot", "tomato", "dairy", "cheese", "milk", "butter", "meat", "beef", "pork", "poultry", "chicken", "turkey", "seafood", "fish", "shrimp", "food", "hamburger", "sandwich", "pizza", "salad", "French fries", "bread", "pasta", "rice", "beverages", "coffee", "tea", "soda", "juice", "napkin", "menu", "ice", "salt", "pepper", "sugar", "ketchup", "tip", "check", "body lotion", "a toothbrush", "shampoo", "soap", "conditioner", "toothpaste", "comb", "brush", "tissues", "shaving cream", "razor", "deodorant", "café", "restroom", "fitness center", "gift shop", "parking lot", "pool", "sauna", "business center", "lobby", "elevator", "escalator", "stadium", "art gallery", "subway station", "museum", "theater", "bank", "convenience store", "post office", "department store", "airport", "hair salon", "club", "old", "new", "fast", "slow", "heavy", "light", "noisy", "quiet", "hard", "soft", "small", "big", "tablet", "laptop", "webcam", "screen", "keyboard", "touchpad", "mouse", "power cord", "plug", "headphones", "cable", "type", "plug in", "charge battery", "share screen", "connect", "log on", "hang up", "get up", "get dressed", "eat breakfast", "eat lunch", "eat dinner", "get home", "go online", "relax", "go to bed", "crowded", "empty", "fun", "boring", "relaxing", "stressful", "clean", "dirty", "easy", "difficult", "yard", "friends", "dancing", "eat out", "swimming", "shopping", "sightseeing"
+    ];
+
+    const phonetics = {
+      a: "ei", b: "bi", c: "si", d: "di", e: "i", f: "ef", g: "yi", h: "eich", i: "ai", j: "yei", k: "kei", l: "el", m: "em", n: "en", o: "ou", p: "pi", q: "kiu", r: "ar", s: "es", t: "ti", u: "iu", v: "vi", w: "dobliu", x: "ex", y: "uai", z: "zi"
+    };
+
+    // Función para desordenar una palabra
+    const shuffleWord = (word) => {
+      const letters = word.split('');
+      for (let i = letters.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [letters[i], letters[j]] = [letters[j], letters[i]];
+      }
+      return letters.join('');
+    };
+
+    // Función para seleccionar una palabra aleatoria
+    const getRandomWord = () => {
+      const randomIndex = Math.floor(Math.random() * words.length);
+      return words[randomIndex];
+    };
+
+    function SpellingApp() {
+      const [currentWord, setCurrentWord] = useState(getRandomWord());
+      const [shuffledWord, setShuffledWord] = useState(shuffleWord(currentWord));
+      const [selectedLetters, setSelectedLetters] = useState([]);
+      const [feedback, setFeedback] = useState("");
+      const [speechRate, setSpeechRate] = useState(1.0);
+
+      // Lanzar confeti
+      const launchConfetti = () => {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+      };
+
+      // Función para reproducir la voz de una letra
+      const speakLetter = (letter) => {
+        responsiveVoice.speak(letter, "US English Female", {
+          rate: speechRate,
+          pitch: 1.0,
+          volume: 1.0,
+        });
+      };
+
+      // Función para reproducir la palabra completa
+      const speakWord = () => {
+        responsiveVoice.speak(currentWord, "US English Female", {
+          rate: speechRate,
+          pitch: 1.0,
+          volume: 1.0,
+        });
+      };
+
+      // Función para seleccionar una letra
+      const selectLetter = (letter, index) => {
+        const expectedLetter = currentWord[selectedLetters.length];
+        if (letter === expectedLetter) {
+          const newSelectedLetters = [...selectedLetters, { letter, index }];
+          setSelectedLetters(newSelectedLetters);
+          speakLetter(letter); // Reproducir la voz de la letra
+
+          // Verificar si la palabra está completa
+          if (newSelectedLetters.length === currentWord.length) {
+            setFeedback("¡Correcto! 🎉");
+            launchConfetti(); // Lanzar confeti
+            setTimeout(() => {
+              setCurrentWord(getRandomWord());
+              setShuffledWord(shuffleWord(currentWord));
+              setSelectedLetters([]);
+              setFeedback("");
+            }, 2000); // Cambiar de palabra después de 2 segundos
+          }
+        }
+      };
+
+      // Efecto para actualizar la palabra desordenada cuando cambia la palabra actual
+      useEffect(() => {
+        setShuffledWord(shuffleWord(currentWord));
+      }, [currentWord]);
+
+      return (
+        <div className="flex flex-col items-center gap-6 p-6 bg-white bg-opacity-10 rounded-lg shadow-lg">
+          <h1 className="text-3xl font-bold">Ordena las Letras</h1>
+          <div className="flex gap-2">
+            {selectedLetters.map((item, index) => (
+              <div
+                key={index}
+                className="letter-box correct"
+              >
+                {item.letter}
+                <div className="phonetic">{phonetics[item.letter.toLowerCase()]}</div>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            {shuffledWord.split('').map((letter, index) => (
+              !selectedLetters.some((item) => item.index === index) && (
+                <div
+                  key={index}
+                  className="letter-box"
+                  onClick={() => selectLetter(letter, index)}
+                >
+                  {letter}
+                  <div className="phonetic">{phonetics[letter.toLowerCase()]}</div>
+                </div>
+              )
+            ))}
+          </div>
+          <div className="flex gap-4 flex-wrap justify-center">
+            <button onClick={speakWord} className="bg-blue-500 text-white px-4 py-2 rounded">
+              Escuchar Palabra
+            </button>
+          </div>
+          <div className="flex items-center gap-4">
+            <label className="text-lg">Velocidad de voz:</label>
+            <input
+              type="range"
+              min="0.5"
+              max="2.0"
+              step="0.1"
+              value={speechRate}
+              onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+              className="w-32"
+            />
+            <span>{speechRate.toFixed(1)}x</span>
+          </div>
+          {feedback && <p className="text-xl mt-4">{feedback}</p>}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<SpellingApp />, document.getElementById('root'));
+  </script>
+</body>
+</html>

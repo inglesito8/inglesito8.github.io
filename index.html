@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ordena las Letras</title>
+  <title>ORDER THE WORDS</title>
   <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -67,7 +67,7 @@
     ];
 
     const phonetics = {
-      a: "ei", b: "bi", c: "si", d: "di", e: "i", f: "ef", g: "yi", h: "eich", i: "ai", j: "yei", k: "kei", l: "el", m: "em", n: "en", o: "ou", p: "pi", q: "kiu", r: "ar", s: "es", t: "ti", u: "iu", v: "vi", w: "dobliu", x: "ex", y: "uai", z: "zi"
+      a: "ei", b: "bi", c: "si", d: "di", e: "i", f: "ef", g: "yi", h: "eich", i: "ai", j: "yei", k: "kei", l: "el", m: "em", n: "en", o: "ou", p: "pi", q: "kiu", r: "ar", s: "es", t: "ti", u: "iu", v: "vi", w: "dobliu", x: "ex", y: "uai", z: "zi", "-": "hyphen"
     };
 
     // Función para desordenar una palabra
@@ -149,7 +149,7 @@
 
       return (
         <div className="flex flex-col items-center gap-6 p-6 bg-white bg-opacity-10 rounded-lg shadow-lg">
-          <h1 className="text-3xl font-bold">Ordena las Letras</h1>
+          <h1 className="text-3xl font-bold">ORDER THE WORDS</h1>
           <div className="flex gap-2">
             {selectedLetters.map((item, index) => (
               <div
@@ -177,11 +177,11 @@
           </div>
           <div className="flex gap-4 flex-wrap justify-center">
             <button onClick={speakWord} className="bg-blue-500 text-white px-4 py-2 rounded">
-              Escuchar Palabra
+              LISTEN TO THE WORD
             </button>
           </div>
           <div className="flex items-center gap-4">
-            <label className="text-lg">Velocidad de voz:</label>
+            <label className="text-lg">VOICE RATE:</label>
             <input
               type="range"
               min="0.5"

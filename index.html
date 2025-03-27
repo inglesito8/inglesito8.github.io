@@ -24,7 +24,8 @@
       background: rgba(255, 255, 255, 0.1);
       border: 2px solid rgba(255, 255, 255, 0.2);
       padding: 10px 20px;
-      margin: 5px;
+      margin: 10px;
+      margin-top: 40;
       cursor: pointer;
       border-radius: 8px;
       transition: all 0.3s ease;
@@ -35,6 +36,7 @@
     }
     .letter-box:hover {
       background: rgba(255, 255, 255, 0.2);
+      margin: 15px;
     }
     .letter-box.correct {
       background: #4caf50;
@@ -51,15 +53,31 @@
     }
     .streak-box {
       position: absolute;
-      top:-50px;
-      right: 0px;
-      background: rgba(255, 255, 255, 0.0);
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
       padding: 10px 15px;
       border-radius: 8px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
+    .mode-toggle {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px 15px;
+      border-radius: 8px;
+    }
+
+    .text-3xl {
+      position: absolute;
+      top: -60px;
+      align-items: center;
+      background-color: #aeaeba73;
+    }
+    
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
@@ -73,7 +91,7 @@
       h1 {
         font-size: 24px;
       }
-      .streak-box {
+      .streak-box, .mode-toggle {
         position: static;
         margin-bottom: 15px;
       }
@@ -427,6 +445,7 @@
       const [showPhonetics, setShowPhonetics] = useState(true);
       const [streak, setStreak] = useState(0);
       const [shake, setShake] = useState(false);
+      const [mode, setMode] = useState("student"); // "teacher" or "student"
 
       const launchConfetti = () => {
         confetti({
@@ -470,7 +489,7 @@
             launchConfetti();
             setTimeout(() => {
               setCurrentWord(getRandomWord());
-              setShuffledWord(shuffleWord(currentWord.english));
+              setShuffledWord(mode === "student" ? shuffleWord(currentWord.english) : currentWord.english);
               setSelectedLetters([]);
               setFeedback("");
             }, 2000);
@@ -483,15 +502,21 @@
       };
 
       useEffect(() => {
-        setShuffledWord(shuffleWord(currentWord.english));
-      }, [currentWord]);
+        setShuffledWord(mode === "student" ? shuffleWord(currentWord.english) : currentWord.english);
+        setSelectedLetters([]);
+        setFeedback("");
+      }, [currentWord, mode]);
 
       const getSmiley = () => {
-        if (streak >= 20) return "😁";
-        if (streak >= 10) return "😊";
-        if (streak >= 5) return "🙂";
+        if (streak >= 10) return "😁";
+        if (streak >= 5) return "😊";
+        if (streak >= 3) return "🙂";
         if (streak >= 1) return "😐";
         return "😕";
+      };
+
+      const toggleMode = () => {
+        setMode(mode === "student" ? "teacher" : "student");
       };
 
       return (
@@ -499,6 +524,15 @@
           <div className="streak-box">
             <span className="text-lg">Streak: {streak}</span>
             <span className="text-xl">{getSmiley()}</span>
+          </div>
+          
+          <div className="mode-toggle">
+            <button 
+              onClick={toggleMode}
+              className={`px-4 py-2 rounded ${mode === "teacher" ? "bg-green-500" : "bg-blue-500"}`}
+            >
+              {mode === "teacher" ? "Teacher Mode" : "Student Mode"}
+            </button>
           </div>
           
           <h1 className="text-3xl font-bold">ORDER THE WORDS</h1>
@@ -534,7 +568,7 @@
             </button>
             <button onClick={() => {
               setCurrentWord(getRandomWord());
-              setShuffledWord(shuffleWord(currentWord.english));
+              setShuffledWord(mode === "student" ? shuffleWord(currentWord.english) : currentWord.english);
               setSelectedLetters([]);
               setFeedback("");
             }} className="bg-purple-500 text-white px-4 py-2 rounded">
